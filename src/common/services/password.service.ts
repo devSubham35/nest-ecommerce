@@ -3,7 +3,6 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class PasswordService {
-
   private readonly rounds = 12;
 
   hash(password: string): Promise<string> {

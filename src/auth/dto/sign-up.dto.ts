@@ -22,5 +22,6 @@ export class SignUpDto {
   phone!: string;
 
   @IsString()
+  @MinLength(8)
   password!: string;
 }

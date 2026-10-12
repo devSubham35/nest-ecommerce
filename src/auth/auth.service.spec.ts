@@ -8,7 +8,6 @@ import { PasswordService } from '../common/services/password.service.js';
 describe('AuthService', () => {
   let service: AuthService;
   let users: {
-    findByEmail: jest.Mock;
     createUser: jest.Mock;
     findCredentials: jest.Mock;
     updatePasswordHash: jest.Mock;
@@ -33,7 +32,6 @@ describe('AuthService', () => {
 
   beforeEach(async () => {
     users = {
-      findByEmail: jest.fn(),
       createUser: jest.fn(),
       findCredentials: jest.fn(),
       updatePasswordHash: jest.fn(),
@@ -56,6 +54,26 @@ describe('AuthService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  it('hashes the password before creating a user', async () => {
+    passwords.hash.mockResolvedValue('stored-hash');
+    users.createUser.mockResolvedValue(user);
+
+    await expect(
+      service.register({
+        name: 'Customer',
+        email: 'customer@example.com',
+        phone: '1234567890',
+        password: 'password123',
+      }),
+    ).resolves.toBe(user);
+    expect(users.createUser).toHaveBeenCalledWith({
+      name: 'Customer',
+      email: 'customer@example.com',
+      phone: '1234567890',
+      passwordHash: 'stored-hash',
+    });
   });
 
   it('verifies the password against the stored hash', async () => {
